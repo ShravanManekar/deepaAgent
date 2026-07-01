@@ -284,6 +284,10 @@ with st.sidebar:
             "openai:gpt-5.4",
             "openai:gpt-5.5",
             "openai:gpt-4.1",
+            "google_genai:gemini-2.5-flash",
+            "google_genai:gemini-2.5-pro",
+            "groq:llama-3.3-70b-versatile",
+            "groq:llama-3.1-8b-instant",
             "groq:qwen/qwen3-32b",
         ],
         index=0,
@@ -331,16 +335,18 @@ with st.sidebar:
     if col1.button("🆕 New thread", use_container_width=True,
                    help="Same agent + store, fresh conversation. With "
                         "StoreBackend, files written earlier are still there!"):
-        st.session_state.thread_id = str(uuid.uuid4())
-        st.session_state.history = []
-        st.rerun()
+         st.session_state.thread_id = str(uuid.uuid4())
+         st.session_state.history = []
+         st.rerun()
     if col2.button("🗑️ Reset all", use_container_width=True,
                    help="Wipe checkpointer, store, and chat."):
-        for k in ("checkpointer", "store", "store_seeded", "thread_id", "history"):
-            st.session_state.pop(k, None)
-        st.rerun()
+         for k in ("checkpointer", "store", "store_seeded", "thread_id", "history"):
+             st.session_state.pop(k, None)
+         st.rerun()
 
     # missing-key warnings
+    if model.startswith("google_genai") and not os.getenv("GEMINI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
+        st.error("GEMINI_API_KEY or GOOGLE_API_KEY missing from .env")
     if model.startswith("groq") and not os.getenv("GROQ_API_KEY"):
         st.error("GROQ_API_KEY missing from .env")
     if model.startswith("openai") and not os.getenv("OPENAI_API_KEY"):
